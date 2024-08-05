@@ -1,4 +1,4 @@
-module github.com/vit-um/kbot
+module github.com/dklkv/kbot
 
 go 1.22.5
 
