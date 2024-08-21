@@ -17,24 +17,32 @@ spec:
       {{- end }}
       labels:
         {{- include "helm.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
+	      {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      dnsConfig:
+        nameservers:
+          - 1.1.1.1
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - hostPath:
+          path: /dev/mem
+          type: ""
+        name: dev-mem
       containers:
         - name: {{ .Release.Name }}
-          image: {{ .Values.image.repository }}/{{ .Chart.Name }}:{{ .Values.image.tag }}-{{ .Values.image.arch | default "amd64"}}
+          image: "{{ .Values.image.repository }}/{{ .Chart.Name }}:{{ .Values.image.tag }}-{{ .Values.image.arch | default "amd64"}}"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
+          - mountPath: /dev/mem
+            name: dev-mem
           env:
           - name: {{ .Values.secret.env }}
             valueFrom:
