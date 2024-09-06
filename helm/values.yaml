@@ -1,12 +1,14 @@
 replicaCount: 1
-
 image:
   repository: "ghcr.io/dklkv"
-  tag: "v1.1.0-95d7879"
+  tag: "v1.4.0-b2924bd"
+  os: linux
   arch: amd64
+  parameter: go
 secret:
   name: "kbot"
   env: "TELE_TOKEN"
   key: "token"
+  value: "NzM4MDA2NDQ4NjpBQUVGaWlNUWhCREw4eFp5cmhmN21hUjk1WUtVdEJfazBfUQ=="
 securityContext:
   privileged: true
