@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/stianeikeland/go-rpio"
 	telebot "gopkg.in/telebot.v3"
 )
 
@@ -44,60 +43,68 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		err = rpio.Open()
-		if err != nil {
-			log.Printf("Unable to open gpio: %s", err.Error())
-		}
-
-		defer rpio.Close()
-
-		trafficSignal := make(map[string]map[string]int8)
-
-		trafficSignal["red"] = make(map[string]int8)
-		trafficSignal["amber"] = make(map[string]int8)
-		trafficSignal["green"] = make(map[string]int8)
-
-		trafficSignal["red"]["pin"] = 12
-		//default on/off
-		//trafficSignal["red"]["on"]=0
-		trafficSignal["amber"]["pin"] = 27
-		trafficSignal["green"]["pin"] = 22
+		kbot.Handle("/start", func(m telebot.Context) error {
+			menu := &telebot.ReplyMarkup{
+				ReplyKeyboard: [][]telebot.ReplyButton{
+					{{Text: "Hello"}, {Text: "Help"}},
+					{{Text: "Kyiv"}, {Text: "Boston"}, {Text: "London"}},
+					{{Text: "Vienna"}, {Text: "Tbilisi"}, {Text: "Vancouver"}},
+				},
+			}
+			return m.Send("Welcome to Kbot!", menu)
+		})
 
 		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
-			var (
-				err error
-				pin = rpio.Pin(0)
-			)
-
-			log.Print(m.Message().Payload, m.Text())
-			payload := m.Message().Payload
-
-			switch payload {
-			case "hello":
-				err = m.Send(fmt.Sprintf("Hello I'm Kbot %s!", appVersion))
-
-			case "red", "amber", "green":
-				pin = rpio.Pin(trafficSignal[payload]["pin"])
-				if trafficSignal[payload]["on"] == 0 {
-					pin.Output()
-					trafficSignal[payload]["on"] = 1
-				} else {
-					pin.Input()
-					trafficSignal[payload]["on"] = 0
-				}
-
-				err = m.Send(fmt.Sprintf("Switch %s light signal to %d", payload, trafficSignal[payload]["on"]))
-
+			switch m.Text() {
+			case "Hello":
+				return m.Send(fmt.Sprintf("Hi! I'm Kbot %s! And I know what time it is!", appVersion))
+			case "Help":
+				return m.Send("This is the help message. Here you can find out the current time in the locations of your partners and team members: Kyiv, Boston, London, Vienna, Tbilisi or Vancouver")
+			case "Kyiv":
+				return m.Send("Current time in Kyiv: " + getTime("Kyiv"))
+			case "Boston":
+				return m.Send("Current time in Boston: " + getTime("Boston"))
+			case "London":
+				return m.Send("Current time in London: " + getTime("London"))
+			case "Vienna":
+				return m.Send("Current time in Vienna: " + getTime("Vienna"))
+			case "Tbilisi":
+				return m.Send("Current time in Tbilisi: " + getTime("Tbilisi"))
+			case "Vancouver":
+				return m.Send("Current time in Vancouver: " + getTime("Vancouver"))
 			default:
-				err = m.Send("Usage: /s red|amber|green")
-				
+				return m.Send("Unknown command. Please try again.")
 			}
-
-			return err
 		})
 
 		kbot.Start()
 	},
+}
+
+func getTime(location string) string {
+	var locName string
+	switch location {
+	case "Kyiv":
+		locName = "Europe/Kiev"
+	case "Boston":
+		locName = "America/New_York"
+	case "London":
+		locName = "Europe/London"
+	case "Vienna":
+		locName = "Europe/Vienna"
+	case "Tbilisi":
+		locName = "Asia/Tbilisi"
+	case "Vancouver":
+		locName = "America/Vancouver"
+	default:
+		return "Invalid location"
+	}
+
+	loc, err := time.LoadLocation(locName)
+	if err != nil {
+		return "Invalid location"
+	}
+	return time.Now().In(loc).Format("15:04:05")
 }
 
 func init() {
