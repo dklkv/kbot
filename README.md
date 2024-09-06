@@ -25,3 +25,6 @@ Available commands:
 - `TARGETARCH` is an optional parameter (default value amd64);
 
 The list of available OS and architectures can be found here: https://go.dev/doc/install/source#environment ($GOOS and $GOARCH section).
+
+
+![alt text](<Org charts.png>)
