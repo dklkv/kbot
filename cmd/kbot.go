@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"time"
+	_ "time/tzdata"
 
 	"github.com/spf13/cobra"
 	telebot "gopkg.in/telebot.v3"
@@ -83,8 +84,7 @@ to quickly create a Cobra application.`,
 
 func getTime(location string) string {
 	var locName string
-	fmt.Println(location)
-	
+
 	switch location {
 	case "Kyiv":
 		locName = "Europe/Kiev"
@@ -102,12 +102,7 @@ func getTime(location string) string {
 		locName = "Invalid location"
 	}
 
-	fmt.Println(locName);
-
 	loc, err := time.LoadLocation(locName)
-
-	fmt.Println(loc)
-	fmt.Println(err)
 
 	if err != nil {
 		return "Invalid location"
