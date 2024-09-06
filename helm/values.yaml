@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: "ghcr.io/dklkv"
-  tag: "v1.3.1-87d98e2"
+  tag: "v1.4.0-d7415c9"
   os: linux
   arch: amd64
 secret:
