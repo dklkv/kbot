@@ -30,7 +30,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("kbot %s started", appVersion)
+		fmt.Printf("kbot %s started \n", appVersion)
 
 		kbot, err := telebot.NewBot(telebot.Settings{
 			URL:    "",
@@ -57,7 +57,7 @@ to quickly create a Cobra application.`,
 		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
 			switch m.Text() {
 			case "Hello":
-				return m.Send(fmt.Sprintf("Hi! I'm Kbot %s! And I know what time it is!", appVersion))
+				return m.Send(fmt.Sprintf("Hi! I'm Kbot %s! And I know what time is now!", appVersion))
 			case "Help":
 				return m.Send("This is the help message. Here you can find out the current time in the locations of your partners and team members: Kyiv, Boston, London, Vienna, Tbilisi or Vancouver")
 			case "Kyiv":
@@ -83,6 +83,8 @@ to quickly create a Cobra application.`,
 
 func getTime(location string) string {
 	var locName string
+	fmt.Println(location)
+	
 	switch location {
 	case "Kyiv":
 		locName = "Europe/Kiev"
@@ -97,13 +99,20 @@ func getTime(location string) string {
 	case "Vancouver":
 		locName = "America/Vancouver"
 	default:
-		return "Invalid location"
+		locName = "Invalid location"
 	}
 
+	fmt.Println(locName);
+
 	loc, err := time.LoadLocation(locName)
+
+	fmt.Println(loc)
+	fmt.Println(err)
+
 	if err != nil {
 		return "Invalid location"
 	}
+
 	return time.Now().In(loc).Format("15:04:05")
 }
 
