@@ -53,9 +53,12 @@ pipeline {
             }
         } 
     }
+
     post {
         always {
-            sh 'docker logout'
+            node('main') {
+                sh 'docker logout'
+            }
         }
     }
 }
