@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: "ghcr.io/dklkv"
-  tag: "v1.4.0-b2924bd"
+  tag: "v1.5.0-1004167"
   os: linux
   arch: amd64
   parameter: go
